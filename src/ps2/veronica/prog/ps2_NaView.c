@@ -1,4 +1,7 @@
 #include "../../../ps2/veronica/prog/ps2_NaView.h"
+#ifdef RECVX_PORT
+#include "vu0_state.h"
+#endif
 #include "../../../ps2/veronica/prog/ps2_dummy.h"
 #include "../../../ps2/veronica/prog/ps2_NaDraw2D.h"
 #include "../../../ps2/veronica/prog/ps2_NaGraphics3D.h"
@@ -263,6 +266,7 @@ void _Make_ClipMatrix(sceVu0FMATRIX sc, float scr, float near, float far)
 
     mp2 = &ClipMatrix2[0]; 
     
+#ifndef RECVX_PORT
     asm volatile 
     { 
     .set noreorder
@@ -274,12 +278,16 @@ void _Make_ClipMatrix(sceVu0FMATRIX sc, float scr, float near, float far)
 
     .set reorder
     }
+#else
+memcpy(vu0.clip, mp2, sizeof vu0.clip);
+#endif
 
     fM = ClipScreenMatrix[0];
     
     fw = &ClipDispW; 
     fh = &ClipDispH; 
 
+#ifndef RECVX_PORT
     asm volatile 
     { 
     .set noreorder
@@ -292,6 +300,10 @@ void _Make_ClipMatrix(sceVu0FMATRIX sc, float scr, float near, float far)
 
     .set reorder
     }
+#else
+fM[11] = *fw;
+fM[10] = *fh;
+#endif
 } 
 
 // 100% matching!

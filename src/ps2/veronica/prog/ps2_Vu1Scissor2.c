@@ -9,6 +9,7 @@ extern void VU0_LOAD_SCISSOR_WORKb() __attribute__((section(".vutext")));
 extern void VU0_SET_NODE_ARRAY() __attribute__((section(".vutext")));
 extern void VU0_STORE_SCISSOR_WORK() __attribute__((section(".vutext")));
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 98.80% matching
 void DrawScissorPolygonOpaque2(int count, unsigned long ulType)
 {
@@ -58,7 +59,9 @@ void DrawScissorPolygonOpaque2(int count, unsigned long ulType)
     
     Ps2AddPrim3DEx(ulType, pPrim, count);
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void InitNodeArraySet2()
 {
@@ -69,7 +72,9 @@ void InitNodeArraySet2()
         vmove.xyzw vf19, vf0
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 92.50% matching
 unsigned int _Clip_ViewVolume2(NJS_POINT4* vec) 
 {
@@ -89,7 +94,9 @@ unsigned int _Clip_ViewVolume2(NJS_POINT4* vec)
     
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 unsigned int _Get_ClipViewVolume2()
 {
@@ -107,7 +114,9 @@ unsigned int _Get_ClipViewVolume2()
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 int _Get_ClipVolumePlane() 
 {
@@ -127,7 +136,9 @@ int _Get_ClipVolumePlane()
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 91.43% matching
 void _Check_ClipViewAll(NJS_POINT4* vec) 
 {
@@ -141,7 +152,9 @@ void _Check_ClipViewAll(NJS_POINT4* vec)
     " : : "r"(vec) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 96% matching
 void _Set_NodeArray(VU1_STRIP_BUF* pS, VU1_PRIM_BUF* pP)
 {
@@ -163,8 +176,10 @@ void _Set_NodeArray(VU1_STRIP_BUF* pS, VU1_PRIM_BUF* pP)
     " : : "r"(pS), "r"(pP) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // TODO: Verify that this function hasn't got more parts written in C, for example addiu and paddub tend to be compiler-emitted instructions
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 96.57% matching 
 int _ClipInter(int mask1, int mask2, int xyzflg, float sin, int work0, int work1, int count)
 {
@@ -396,6 +411,7 @@ int _ClipInter(int mask1, int mask2, int xyzflg, float sin, int work0, int work1
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 int _Check_ScissorPlane()

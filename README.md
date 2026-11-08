@@ -1,3 +1,6 @@
+> [!NOTE]
+> This fork adds a native **New Nintendo 3DS port**: see [`port/README.md`](port/README.md) and the [releases](https://github.com/yaboimanguy-a11y/recvx-3ds/releases). No game data is included. The port was written with substantial AI assistance and is separate from the decomp project; the original project's README follows.
+
 # recvx-decomp
 
 <img src="https://i.imgur.com/FreVpxO.png"/> 

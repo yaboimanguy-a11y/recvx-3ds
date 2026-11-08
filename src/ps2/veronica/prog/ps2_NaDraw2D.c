@@ -13,6 +13,7 @@ void CalcPs2ZbuffAB()
     Ps2_zbuff_b = (65536.0f * fNaViwClipNear * fNaViwClipFar) / (fNaViwClipFar - fNaViwClipNear); 
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void sceVu0ITOF12Vector(sceVu0FVECTOR v0, sceVu0IVECTOR v1)
 {
@@ -22,6 +23,7 @@ void sceVu0ITOF12Vector(sceVu0FVECTOR v0, sceVu0IVECTOR v1)
 	sqc2    vf5,0x0(%0)
 	": : "r" (v0) , "r" (v1));
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 void	njDrawLine2D(NJS_POINT2COL *p, Int n, Float pri, Uint32 attr)

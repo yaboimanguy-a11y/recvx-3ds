@@ -63,6 +63,7 @@ void 	njSetEORFunction( void (*func)(void) )
 
 #pragma optimization_level 0
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void Ps2SwapDBuff() 
 { 
@@ -94,7 +95,8 @@ void Ps2SwapDBuff()
     *(volatile unsigned int*)SR_CU0 = 0; 
     
     VsyncFunc(); 
-} 
+}
+#endif /* RECVX_PORT */ 
 
 // 100% matching! 
 int vsync_func(int) 

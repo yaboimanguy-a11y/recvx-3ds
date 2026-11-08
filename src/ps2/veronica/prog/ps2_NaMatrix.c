@@ -14,6 +14,7 @@ NJS_MATRIX TempMatrix1;*/
 
 extern void VU0_INIT_CALC_PROCESS() __attribute__((section(".vutext")));
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 98.85% matching
 void	njInitMatrix(NJS_MATRIX *m, Sint32 n, Int flag)
 {
@@ -90,7 +91,9 @@ void	njInitMatrix(NJS_MATRIX *m, Sint32 n, Int flag)
     .set reorder
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching
 void	njCalcPoints(NJS_MATRIX *m, NJS_POINT3 *ps, NJS_POINT3 *pd, Int num)
 {
@@ -154,7 +157,9 @@ void	njCalcPoints(NJS_MATRIX *m, NJS_POINT3 *ps, NJS_POINT3 *pd, Int num)
     " : : "r"(m), "r"(ps), "r"(pd), "r"(&num) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void    njGetTranslation(NJS_MATRIX *m, NJS_POINT3 *p)
 {
@@ -177,7 +182,9 @@ void    njGetTranslation(NJS_MATRIX *m, NJS_POINT3 *p)
     " : : "r"(m), "r"(p) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void    njUnitTransPortion(NJS_MATRIX *m)
 {
@@ -194,7 +201,9 @@ void    njUnitTransPortion(NJS_MATRIX *m)
     " : : "r"(m) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void    njUnitRotPortion(NJS_MATRIX *m)
 {
@@ -219,6 +228,7 @@ void    njUnitRotPortion(NJS_MATRIX *m)
     " : : "r"(m) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void    njClearMatrix()
@@ -230,6 +240,7 @@ void    njClearMatrix()
     njSetMatrix(NULL, &NaViwViewMatrix);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Bool	njPushMatrix(NJS_MATRIX *m)
 {
@@ -274,6 +285,7 @@ Bool	njPushMatrix(NJS_MATRIX *m)
 
     return TRUE;
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 Bool	njPopMatrix(Uint32 n)
@@ -294,6 +306,7 @@ Bool	njPopMatrix(Uint32 n)
     return TRUE;
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njUnitMatrix(register NJS_MATRIX *m)
 {
@@ -320,7 +333,9 @@ void	njUnitMatrix(register NJS_MATRIX *m)
     .set reorder
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njSetMatrix(NJS_MATRIX *md, NJS_MATRIX *ms)
 {
@@ -347,7 +362,9 @@ void	njSetMatrix(NJS_MATRIX *md, NJS_MATRIX *ms)
     .set reorder
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njSetMatrixCN(NJS_MATRIX* pMat)
 {
@@ -362,7 +379,9 @@ void njSetMatrixCN(NJS_MATRIX* pMat)
     " : : "r"(pMat) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njGetMatrix(NJS_MATRIX *m)
 {
@@ -389,7 +408,9 @@ void	njGetMatrix(NJS_MATRIX *m)
     .set reorder
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njMultiMatrix(NJS_MATRIX *md, NJS_MATRIX *ms)
 {
@@ -439,7 +460,9 @@ void	njMultiMatrix(NJS_MATRIX *md, NJS_MATRIX *ms)
     " : : "r"(md), "r"(ms) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njTranslate(NJS_MATRIX *m, Float x, Float y, Float z)
 {
@@ -475,7 +498,9 @@ void	njTranslate(NJS_MATRIX *m, Float x, Float y, Float z)
     " : : "r"(m), "f"(x), "f"(y), "f"(z) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njTranslateV(NJS_MATRIX *m, NJS_VECTOR *v)
 {
@@ -512,7 +537,9 @@ void	njTranslateV(NJS_MATRIX *m, NJS_VECTOR *v)
     " : : "r"(m), "r"(v) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njRotateX(NJS_MATRIX *m, Angle ang)
 {
@@ -556,7 +583,9 @@ void	njRotateX(NJS_MATRIX *m, Angle ang)
     " : : "r"(m), "f"(fSin), "f"(fCos) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njRotateY(NJS_MATRIX *m, Angle ang)
 {
@@ -600,7 +629,9 @@ void	njRotateY(NJS_MATRIX *m, Angle ang)
     " : : "r"(m), "f"(fSin), "f"(fCos) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njRotateZ(NJS_MATRIX *m, Angle ang)
 {
@@ -644,6 +675,7 @@ void	njRotateZ(NJS_MATRIX *m, Angle ang)
     " : : "r"(m), "f"(fSin), "f"(fCos) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void	njRotateXYZ(NJS_MATRIX *m, Angle angx, Angle angy, Angle angz)
@@ -658,6 +690,7 @@ void	njRotateXYZ(NJS_MATRIX *m, Angle angx, Angle angy, Angle angz)
     njRotateX(m, angx);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njRotXYZ(NJS_MATRIX* pMatrix, int lAngleX, int lAngleY, int lAngleZ)
 {
@@ -732,7 +765,9 @@ void njRotXYZ(NJS_MATRIX* pMatrix, int lAngleX, int lAngleY, int lAngleZ)
     " : : "r"(pMatrix) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njRotate(NJS_MATRIX *m, NJS_VECTOR *v, Angle ang)
 {
@@ -843,7 +878,9 @@ void	njRotate(NJS_MATRIX *m, NJS_VECTOR *v, Angle ang)
     " : : "r"(m), "r"(v), "f"(fSin), "f"(fCos) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njScale(NJS_MATRIX *m, Float sx, Float sy, Float sz)
 {
@@ -878,7 +915,9 @@ void	njScale(NJS_MATRIX *m, Float sx, Float sy, Float sz)
     " : : "r"(m), "f"(sx), "f"(sy), "f"(sz) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njScaleV(NJS_MATRIX *m, NJS_VECTOR *v)
 {
@@ -914,7 +953,9 @@ void	njScaleV(NJS_MATRIX *m, NJS_VECTOR *v)
     " : : "r"(m), "r"(v) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Bool	njInvertMatrix(NJS_MATRIX *m)
 {
@@ -970,7 +1011,9 @@ Bool	njInvertMatrix(NJS_MATRIX *m)
 
     return TRUE;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njTransposeMatrix(NJS_MATRIX *m)
 {
@@ -1005,6 +1048,7 @@ void	njTransposeMatrix(NJS_MATRIX *m)
     " : : "r"(m) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 static float njAtan2b(float a, float b)
@@ -1012,6 +1056,7 @@ static float njAtan2b(float a, float b)
     return atan2(a, b);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njMirror(NJS_MATRIX *m,NJS_PLANE *pl)
 {
@@ -1247,7 +1292,9 @@ void	njMirror(NJS_MATRIX *m,NJS_PLANE *pl)
     
     njMultiMatrix(m, &mat);
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njCalcPoint(NJS_MATRIX *m, NJS_POINT3 *ps, NJS_POINT3 *pd)
 {
@@ -1291,7 +1338,9 @@ void	njCalcPoint(NJS_MATRIX *m, NJS_POINT3 *ps, NJS_POINT3 *pd)
     " : : "r"(m), "r"(ps), "r"(pd) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njCalcPoint4(NJS_MATRIX* pMatrix, NJS_POINT4* pSrcPoint, NJS_POINT4* pDstPoint)
 {
@@ -1320,7 +1369,9 @@ void njCalcPoint4(NJS_MATRIX* pMatrix, NJS_POINT4* pSrcPoint, NJS_POINT4* pDstPo
     " : : "r"(pMatrix), "r"(pSrcPoint), "r"(pDstPoint) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njCalcPointCN(NJS_POINT3* pSrcPoint, NJS_POINT3* pDstPoint)
 {
@@ -1355,7 +1406,9 @@ void njCalcPointCN(NJS_POINT3* pSrcPoint, NJS_POINT3* pDstPoint)
     " : : "r"(pSrcPoint), "r"(pDstPoint) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njAddVector(NJS_VECTOR *vd, NJS_VECTOR *vs)
 {
@@ -1381,7 +1434,9 @@ void	njAddVector(NJS_VECTOR *vd, NJS_VECTOR *vs)
     " : : "r"(vd), "r"(vs) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njSubVector(NJS_VECTOR *vd, NJS_VECTOR *vs)
 {
@@ -1407,7 +1462,9 @@ void	njSubVector(NJS_VECTOR *vd, NJS_VECTOR *vs)
     " : : "r"(vd), "r"(vs) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njCalcVector(NJS_MATRIX *m, NJS_VECTOR *vs, NJS_VECTOR *vd)
 {
@@ -1449,7 +1506,9 @@ void	njCalcVector(NJS_MATRIX *m, NJS_VECTOR *vs, NJS_VECTOR *vd)
     " : : "r"(m), "r"(vs), "r"(vd) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Float	njUnitVector(NJS_VECTOR *v)
 {
@@ -1497,7 +1556,9 @@ Float	njUnitVector(NJS_VECTOR *v)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Float	njScalor(NJS_VECTOR *v)
 {
@@ -1535,7 +1596,9 @@ Float	njScalor(NJS_VECTOR *v)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Float	njScalor2(NJS_VECTOR *v)
 {
@@ -1567,7 +1630,9 @@ Float	njScalor2(NJS_VECTOR *v)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void	njProjectScreen(NJS_MATRIX *m, NJS_POINT3 *p3, NJS_POINT2 *p2)
 {
@@ -1618,7 +1683,9 @@ void	njProjectScreen(NJS_MATRIX *m, NJS_POINT3 *p3, NJS_POINT2 *p2)
     " : : "r"(p2), "r"(&Point), "f"(_nj_screen_.dist) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 Float	njOuterProduct(NJS_VECTOR *v1, NJS_VECTOR *v2, NJS_VECTOR *ov)
 {
@@ -1675,7 +1742,9 @@ Float	njOuterProduct(NJS_VECTOR *v1, NJS_VECTOR *v2, NJS_VECTOR *ov)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 Float	njInnerProduct(NJS_VECTOR *v1, NJS_VECTOR *v2)
 {
@@ -1714,7 +1783,9 @@ Float	njInnerProduct(NJS_VECTOR *v1, NJS_VECTOR *v2)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void njTranslateEx(NJS_VECTOR *v)
 {
@@ -1746,6 +1817,7 @@ void njTranslateEx(NJS_VECTOR *v)
     " : : "r"(v), "r"(pNaMatMatrixStuckPtr) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 void njRotateEx( Angle *ang, Sint32 lv )
@@ -1764,6 +1836,7 @@ void njRotateEx( Angle *ang, Sint32 lv )
     }
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void njScaleEx(NJS_VECTOR *v)
 {
@@ -1794,6 +1867,7 @@ void njScaleEx(NJS_VECTOR *v)
     " : : "r"(v), "r"(pNaMatMatrixStuckPtr) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 Bool njPushMatrixEx( void )
@@ -1811,6 +1885,7 @@ Bool njPopMatrixEx( void )
     // no return 
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void njRotTransPers(NJS_POINT3* pPoint, NJS_SCRVECTOR* pScreen)
 {
@@ -1857,6 +1932,7 @@ void njRotTransPers(NJS_POINT3* pPoint, NJS_SCRVECTOR* pScreen)
 
     pScreen->fog = njCalcFogPower(pScreen->z);
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void njRotTrans(NJS_POINT3* pPoint, NJS_POINT3* pOut)
@@ -1866,6 +1942,7 @@ void njRotTrans(NJS_POINT3* pPoint, NJS_POINT3* pOut)
     njCalcPointCN(pPoint, pOut);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njPers(NJS_SCRVECTOR* pScreen)
 {
@@ -1915,7 +1992,9 @@ void njPers(NJS_SCRVECTOR* pScreen)
     " : : "r"(pScreen), "f"(_nj_screen_.dist) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njCopyMatrix(NJS_MATRIX* pDstMat, NJS_MATRIX* pSrcMat) 
 {
@@ -1935,7 +2014,9 @@ void njCopyMatrix(NJS_MATRIX* pDstMat, NJS_MATRIX* pSrcMat)
     " : : "r"(pDstMat), "r"(pSrcMat) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njMulMatrixCN(NJS_MATRIX* pSrcMat1, NJS_MATRIX* pSrcMat2)
 {
@@ -1980,3 +2061,4 @@ void njMulMatrixCN(NJS_MATRIX* pSrcMat1, NJS_MATRIX* pSrcMat2)
     " : : "r"(pSrcMat1), "r"(pSrcMat2) : 
     );
 }
+#endif /* RECVX_PORT */

@@ -1285,6 +1285,7 @@ CHUNK_HEAD* njCnkCvVn(CHUNK_HEAD* pCnk)
     return (CHUNK_HEAD*)fpCnk;
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 98.11% matching
 CHUNK_HEAD* njCnkCvVnPs2(CHUNK_HEAD* pCnk)
 {
@@ -1478,6 +1479,7 @@ CHUNK_HEAD* njCnkCvVnPs2(CHUNK_HEAD* pCnk)
     
     return (CHUNK_HEAD*)fpCnk;
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 CHUNK_HEAD* njCnkCvVMod(CHUNK_HEAD* pCnk)
@@ -1833,6 +1835,7 @@ CHUNK_HEAD* njCnkCs(CHUNK_HEAD* pCnk)
     return (CHUNK_HEAD*)uspCnk;
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 int _CVV(float* v0)
 {
@@ -1864,7 +1867,9 @@ int _CVV(float* v0)
             
     } 
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 99.22% matching
 CHUNK_HEAD* njCnkCsUvh(CHUNK_HEAD* pCnk)
 {
@@ -2296,7 +2301,9 @@ CHUNK_HEAD* njCnkCsUvh(CHUNK_HEAD* pCnk)
     
     return (CHUNK_HEAD*)uspCnk;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 99.22% matching
 CHUNK_HEAD* njCnkCsUvn(CHUNK_HEAD* pCnk)
 {
@@ -2728,6 +2735,7 @@ CHUNK_HEAD* njCnkCsUvn(CHUNK_HEAD* pCnk)
     
     return (CHUNK_HEAD*)uspCnk;
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 CHUNK_HEAD* njCnkDefaultLong(CHUNK_HEAD* pCnk)

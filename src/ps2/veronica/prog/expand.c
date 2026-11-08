@@ -15,6 +15,7 @@ int Expand(register char* s, register unsigned char* d)
 
     T = 0;
 
+#ifndef RECVX_PORT
     asm volatile 
     {
     
@@ -200,7 +201,57 @@ int Expand(register char* s, register unsigned char* d)
         sub     T, d, t3 
         nop
         
-    }	
+    }
+#else
+{   /* PRS-style LZ: LSB-first control bits, 8 per byte (first byte: 8 after
+     * an initial count of 9).  1 = literal; 01 + 16-bit word = long copy
+     * (offset = word >> 3 | ~0x1FFF, length = (word & 7) + 2, or next byte + 1
+     * when that is 0; word 0 = end); 00 + 2 bits + offset byte = short copy
+     * (offset = byte | ~0xFF, length = bits + 2). */
+    unsigned char *start = d;
+    unsigned int ctl = (unsigned char)*s++;
+    int left = 9;
+#define EXP_BIT(b) do { if (--left <= 0) { ctl = (unsigned char)*s++; left = 8; } \
+                        (b) = ctl & 1; ctl >>= 1; } while (0)
+    for (;;) {
+        int bit, n;
+        int off;
+        EXP_BIT(bit);
+        if (bit) {
+            *d++ = (unsigned char)*s++;
+            continue;
+        }
+        EXP_BIT(bit);
+        if (bit) {
+            unsigned int w = (unsigned char)s[0] | ((unsigned char)s[1] << 8);
+            s += 2;
+            if (w == 0)
+                break;
+            off = (int)((w >> 3) | 0xFFFFE000u);
+            n = w & 7;
+            if (n != 0)
+                n += 2;
+            else
+                n = (unsigned char)*s++ + 1;
+        } else {
+            int b1, b0;
+            EXP_BIT(b1);
+            EXP_BIT(b0);
+            n = ((b1 << 1) | b0) + 2;
+            off = (int)((unsigned char)*s++ | 0xFFFFFF00u);
+        }
+        {
+            unsigned char *src = d + off;
+            do {
+                *d++ = *src++;
+            } while (--n > 0);
+        }
+    }
+#undef EXP_BIT
+    T = (int)(d - start);
+}
+#endif
+	
 
     return T;
 } 

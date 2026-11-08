@@ -793,6 +793,7 @@ void _fmCnkCalcMuscle(MASK_WORK* fm)
     
     n = fm->jnum;
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -821,6 +822,14 @@ void _fmCnkCalcMuscle(MASK_WORK* fm)
     .set reorder
     " : "=r"(n), "=r"(jaw) : "r"(jaw->id), "r"(svp), "r"(dvp) : "t0", "t1", "t2", "t3", "memory" 
     );
+#else
+{   /* copy each jaw vertex's first quadword from src to dst */
+    int k;
+    for (k = n; k > 0; k--, jaw++)
+        memcpy(&dvp[jaw->id * 8], &svp[jaw->id * 8], 16);
+    n = 0;
+}
+#endif
     
     con = fm->list;
     list = fm->vlist;
@@ -869,6 +878,7 @@ void _fmCnkCalcMuscle(MASK_WORK* fm)
         p0 = mvp;
         p1 = mrp;
         
+#ifndef RECVX_PORT
         asm volatile
         ("
         .set noreorder
@@ -926,6 +936,19 @@ void _fmCnkCalcMuscle(MASK_WORK* fm)
         " : "=r"(svp), "=r"(dvp), "=r"(p0), "=r"(p1) : "f"(rsum), "r"(mvp), "r"(mrp), "r"(m)
           : "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "t0", "t1", "memory"
         );
+#else
+if (m > 0) {   /* dvp.xyz += sum of vec * rate * rsum, last entry first */
+    float x = dvp[0], y = dvp[1], z = dvp[2];
+    int k;
+    for (k = m - 1; k >= 0; k--) {
+        float r = mrate[k] * rsum;
+        x += mvec[k]->x * r;
+        y += mvec[k]->y * r;
+        z += mvec[k]->z * r;
+    }
+    dvp[0] = x; dvp[1] = y; dvp[2] = z;
+}
+#endif
     }
 }
 
@@ -973,6 +996,7 @@ void _fmCnkCalcJaw(MASK_WORK* fm)
             
             if (jaw->rate == 1.0f) 
             {
+#ifndef RECVX_PORT
                 asm volatile
                 ("
                 .set noreorder
@@ -1006,7 +1030,17 @@ void _fmCnkCalcJaw(MASK_WORK* fm)
                     sw          t1, NJS_POINT4.z(%0) 
                 .set reorder
                 " : : "r"(&vec), "r"(mat), "r"(dvp1) : 
-                ); 
+                );
+#else
+{
+    float *mm = (float *)mat, *p = &dvp1->x;
+    vec.x = mm[0] * p[0] + mm[4] * p[1] + mm[8] * p[2] + mm[12];
+    vec.y = mm[1] * p[0] + mm[5] * p[1] + mm[9] * p[2] + mm[13];
+    vec.z = mm[2] * p[0] + mm[6] * p[1] + mm[10] * p[2] + mm[14];
+    vec.w = dvp1->w;
+}
+#endif
+ 
             } 
             else 
             {
@@ -1014,6 +1048,7 @@ void _fmCnkCalcJaw(MASK_WORK* fm)
                 
                 njRotateX(mat2, (int)(182.04445f * (jawang * jaw->rate)) & 0xFFFF);
                 
+#ifndef RECVX_PORT
                 asm volatile
                 ("
                 .set noreorder
@@ -1083,7 +1118,21 @@ void _fmCnkCalcJaw(MASK_WORK* fm)
                     sw          t1, NJS_POINT4.z(%0) 
                 .set reorder
                 " : : "r"(&vec), "r"(dvp1), "r"(jmat1), "r"(mat2), "f"(jawtrans) : 
-                ); 
+                );
+#else
+{   /* vec = dvp1 * (jmat1 * translate(mat2, jawtrans, 0, 0)) */
+    NJS_MATRIX t;
+    float *mm = t, *p = &dvp1->x;
+    memcpy(t, mat2, sizeof t);
+    njTranslate(&t, jawtrans, 0, 0);
+    njMultiMatrix(&t, jmat1);
+    vec.x = mm[0] * p[0] + mm[4] * p[1] + mm[8] * p[2] + mm[12];
+    vec.y = mm[1] * p[0] + mm[5] * p[1] + mm[9] * p[2] + mm[13];
+    vec.z = mm[2] * p[0] + mm[6] * p[1] + mm[10] * p[2] + mm[14];
+    vec.w = dvp1->w;
+}
+#endif
+ 
             }
             
             *(u_long128*)dvp1 = *(u_long128*)&vec;
@@ -1127,6 +1176,7 @@ void _fmCnkCalcEye(MASK_WORK* fm)
         { 
             njPushMatrix(NULL);
             
+#ifndef RECVX_PORT
             asm volatile
             ("
             .set noreorder
@@ -1189,7 +1239,20 @@ void _fmCnkCalcEye(MASK_WORK* fm)
                 sw          t3, NJS_POINT3.z(%2)
             .set reorder
             " : : "r"(&fm->eyemat[i]), "r"(&obj->pos), "r"(&q3), "r"(&t3), "r"(&r3), "r"(&fm->param.eye) : 
-            ); 
+            );
+#else
+{   /* r3 = t3 * eyemat; q3 = (pos * eyemat + eye) - pos * eyemat */
+    float *mm = (float *)&fm->eyemat[i], a[3], *e = (float *)&fm->param.eye;
+    float *p = &obj->pos[0];
+    int k;
+    for (k = 0; k < 3; k++) {
+        a[k] = mm[k] * p[0] + mm[4 + k] * p[1] + mm[8 + k] * p[2] + mm[12 + k];
+        (&r3.x)[k] = mm[k] * t3.x + mm[4 + k] * t3.y + mm[8 + k] * t3.z + mm[12 + k];
+        (&q3.x)[k] = (a[k] + e[k]) - a[k];
+    }
+}
+#endif
+ 
 
             dx = q3.x;
             dy = q3.y;
@@ -1251,6 +1314,7 @@ void _fmCnkCalcTang(MASK_WORK* fm)
        
         for ( ; i > 0; i--) 
         { 
+#ifndef RECVX_PORT
             asm volatile
             ("
             .set noreorder
@@ -1266,13 +1330,18 @@ void _fmCnkCalcTang(MASK_WORK* fm)
                 sqc2       vf7,    0(%0)
             .set reorder
             " : : "r"(mat) : 
-            ); 
+            );
+#else
+njUnitMatrix(mat);
+#endif
+ 
             
             njRotateX(mat, (int)(182.04445f * (tangx * tang->rate)) & 0xFFFF);
             njRotateY(mat, (int)(182.04445f * (tangy * tang->rate)) & 0xFFFF);
             
             calc_ofs = tang->id * vofs;
             
+#ifndef RECVX_PORT
             asm volatile  
             ("
             .set noreorder
@@ -1311,6 +1380,15 @@ void _fmCnkCalcTang(MASK_WORK* fm)
             .set reorder
             " : : "r"(&svp[calc_ofs]), "r"(&dvp[calc_ofs]), "f"(tangz), "r"(mat) : 
             );
+#else
+{   /* dvp = svp * mat, with mat row 2 scaled by tangz */
+    float *mm = (float *)mat, *s = &svp[calc_ofs], *d = &dvp[calc_ofs];
+    float x = s[0], y = s[1], z = s[2] * tangz;
+    int k;
+    for (k = 0; k < 3; k++)
+        d[k] = mm[k] * x + mm[4 + k] * y + mm[8 + k] * z + mm[12 + k];
+}
+#endif
             
             tang++; 
         }

@@ -14,6 +14,7 @@ void _Make_SinTable()
     } 
 }  
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Float	njSin(Angle n)
 {
@@ -76,7 +77,9 @@ Float	njSin(Angle n)
     " : "=r"(ret) : "r"(&n), "r"(SinTable) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 Float	njCos(Angle n)
 {
@@ -138,7 +141,9 @@ Float	njCos(Angle n)
     " : "=r"(ret) : "r"(&n), "r"(SinTable) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void njSinCos(int lAngle, float* sin, float* cos)
 {
@@ -219,6 +224,7 @@ void njSinCos(int lAngle, float* sin, float* cos)
     " : : "r"(&lAngle), "r"(sin), "r"(cos), "r"(SinTable) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 Float	njFraction  (Float n) 
@@ -226,6 +232,7 @@ Float	njFraction  (Float n)
     return n - floorf(n); 
 } 
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 Float	njSqrt(Float n)
 {
@@ -253,7 +260,9 @@ Float	njSqrt(Float n)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 Float	njInvertSqrt(Float n)
 {
@@ -281,7 +290,9 @@ Float	njInvertSqrt(Float n)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void	njLinear(Float *idata, Float *odata, NJS_SPLINE *attr, Float frame)
 {
@@ -325,7 +336,9 @@ void	njLinear(Float *idata, Float *odata, NJS_SPLINE *attr, Float frame)
     " : : "r"(idata), "r"(odata), "r"(attr), "f"(frame) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void	njOverhauserSpline(Float *idata, Float *odata, NJS_SPLINE *attr, Float frame)
 {
@@ -424,6 +437,7 @@ void	njOverhauserSpline(Float *idata, Float *odata, NJS_SPLINE *attr, Float fram
     " : : "r"(idata), "r"(odata), "r"(attr), "f"(frame), "f"(ftmp) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 void	njBezierSpline(Float *idata, Float *odata, NJS_SPLINE *attr, Float frame) 

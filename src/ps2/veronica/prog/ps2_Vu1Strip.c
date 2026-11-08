@@ -39,6 +39,7 @@ extern void VU0_CLIP_VIEW_VOLUME_ALL() __attribute__((section(".vutext")));
 extern void VU0_CALC_COLOR() __attribute__((section(".vutext")));
 extern void VU0_INIT_CALC_COLOR() __attribute__((section(".vutext")));
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetScreenProjection(float fProjection)
 {
@@ -58,7 +59,9 @@ void vu1SetScreenProjection(float fProjection)
     
     _Make_ClipMatrix(ClipMatrix2, fVu1Projection, _fNaViwClipNear, _fNaViwClipFar);
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetNearFarClip(float fNear, float fFar)
 {
@@ -83,7 +86,9 @@ void vu1SetNearFarClip(float fNear, float fFar)
     
     _Make_ClipMatrix(ClipMatrix2, fVu1Projection, _fNaViwClipNear, _fNaViwClipFar);
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetScreenOffset(float fOffsetX, float fOffsetY)
 {
@@ -104,7 +109,9 @@ void vu1SetScreenOffset(float fOffsetX, float fOffsetY)
         
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetScreenAspect(float fAspectW, float fAspectH)
 {
@@ -125,7 +132,9 @@ void vu1SetScreenAspect(float fAspectW, float fAspectH)
         
     }
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetDiffuseMaterial(VU1_COLOR* pDiffuse)
 {
@@ -152,7 +161,9 @@ void vu1SetDiffuseMaterial(VU1_COLOR* pDiffuse)
     " : : "r"(pDiffuse), "f"(128.0f) : "t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetSpeculaMaterial(VU1_COLOR* pSpecula)
 {
@@ -177,7 +188,9 @@ void vu1SetSpeculaMaterial(VU1_COLOR* pSpecula)
     " : : "f"(31.0f) : "t0", "t1", "t2"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetAmbient(VU1_COLOR* pAmbient)
 {
@@ -191,7 +204,9 @@ void vu1SetAmbient(VU1_COLOR* pAmbient)
     " : : "r"(pAmbient) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1SetAlphaRatio(float fAlpha)
 {
@@ -208,9 +223,11 @@ void vu1SetAlphaRatio(float fAlpha)
     " : : "f"(fVu1AlphaRatio) : "t0"
     );
 }
+#endif /* RECVX_PORT */
 
 #include "ps2_Vu1Scissor2.c"
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void InitNodeArraySet(SCISSOR* scissor)
 {
@@ -236,6 +253,7 @@ void InitNodeArraySet(SCISSOR* scissor)
     " : : "r"(scissor) : 
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 static void InitScissorPlane(SCISSOR_PLANE* sp)
@@ -265,6 +283,7 @@ void _Init_ScissorSystem()
     InitNodeArraySet(&scissorflip);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 int _Clip_ViewVolume(float* clip, float local_clip[4], float* vertex)
 {
@@ -291,7 +310,9 @@ int _Clip_ViewVolume(float* clip, float local_clip[4], float* vertex)
     " : : "r"(clip), "r"(vertex) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void PushTriangleNodeArray(SCISSOR* scissor, NODE* nod)
 {
@@ -336,7 +357,9 @@ void PushTriangleNodeArray(SCISSOR* scissor, NODE* nod)
     " : : "r"(scissor), "r"(&node) : "v1"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void ResetNodeArraySet(SCISSOR* scissor)
 {
@@ -359,7 +382,9 @@ void ResetNodeArraySet(SCISSOR* scissor)
     " : : "r"(scissor) : 
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void ScissorTriangle(SCISSOR* scissor, SCISSOR_PLANE* plane_set)
 {
@@ -761,6 +786,7 @@ void ScissorTriangle(SCISSOR* scissor, SCISSOR_PLANE* plane_set)
         outarray = scissor->out;
     }
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 int _Check_DisplayAreaPoint(NJS_VECTOR* vec)
@@ -773,6 +799,7 @@ int _Check_DisplayAreaPoint(NJS_VECTOR* vec)
     return 1;
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void DrawScissorPolygonOpaque(SCISSOR* scissor, unsigned long ulType)
 {
@@ -841,6 +868,7 @@ void DrawScissorPolygonOpaque(SCISSOR* scissor, unsigned long ulType)
     
     Ps2AddPrim3DEx(ulType, pP, in->nodeNum);
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 void vu1DrawTriangleStripOpaqueSingle(unsigned long ulType, VU1_STRIP_BUF* pStripTop, unsigned short usStripMax, unsigned short usMode)
@@ -1198,6 +1226,7 @@ void vu1DrawTriangleStripTransSingle(unsigned long ulType, VU1_STRIP_BUF* pStrip
     Ps2AddPrim3DEx(ulType, Ps2_DRAW_TMP, usStripMax);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 99.38% matching
 int _Clip_Screen(float* clip)
 {
@@ -1229,7 +1258,9 @@ int _Clip_Screen(float* clip)
 
     return ret;
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 97.44% matching
 void vu1DrawTriangleStripTransDouble(unsigned long ulType, VU1_STRIP_BUF* pS, unsigned short usStripMax, unsigned short usMode)
 { 
@@ -1559,8 +1590,10 @@ void vu1DrawTriangleStripTransDouble(unsigned long ulType, VU1_STRIP_BUF* pS, un
     } 
     
     Ps2AddPrim3DEx(ulType, Ps2_DRAW_TMP, usStripMax); 
-} 
+}
+#endif /* RECVX_PORT */ 
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColor(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1585,7 +1618,9 @@ void vu1GetVertexColor(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "f"(128.0f), "f"(256.0f) : "$t0", "$t1", "$t2", "$t3"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorCM(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim) // first parameter is not present on the DWARF
 {
@@ -1603,7 +1638,9 @@ void vu1GetVertexColorCM(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim) // first pa
     " : : "r"(pPrim), "r"(&vu1Diffuse), "f"(fVu1AlphaRatio) : "$v1", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorIgnore(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim) // first parameter is not present on the DWARF
 {
@@ -1626,7 +1663,9 @@ void vu1GetVertexColorIgnore(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim) // firs
     " : : "r"(pPrim), "f"(fVu1AlphaRatio) : "$t1"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDif(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1649,7 +1688,9 @@ void vu1GetVertexColorDif(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Diffuse), "f"(fVu1AlphaRatio) : "$v1", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifAmb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim) 
 {
@@ -1673,7 +1714,9 @@ void vu1GetVertexColorDifAmb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "f"(fVu1AlphaRatio) : "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 96.47% matching
 void vu1GetVertexColorDifSpe1(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1707,7 +1750,9 @@ void vu1GetVertexColorDifSpe1(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "f"(fVu1AlphaRatio) : "$t0", "memory"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifSpe2(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1742,7 +1787,9 @@ void vu1GetVertexColorDifSpe2(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Ambient), "r"(&vu1Diffuse), "r"(&vu1Specula), "f"(fVu1AlphaRatio) : "$v1", "$a2", "$a3", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifSpe3(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1788,7 +1835,9 @@ void vu1GetVertexColorDifSpe3(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Diffuse), "r"(&vu1Specula), "f"(fVu1AlphaRatio) : "$v1", "$a2", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifSpe1Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1824,7 +1873,9 @@ void vu1GetVertexColorDifSpe1Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Ambient), "r"(&vu1Diffuse), "r"(&vu1Specula), "f"(fVu1AlphaRatio) : "$v1", "$a2", "$a3", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifSpe2Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1859,7 +1910,9 @@ void vu1GetVertexColorDifSpe2Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Ambient), "r"(&vu1Diffuse), "r"(&vu1Specula), "f"(fVu1AlphaRatio) : "$v1", "$a2", "$a3", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void vu1GetVertexColorDifSpe3Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
 {
@@ -1908,6 +1961,7 @@ void vu1GetVertexColorDifSpe3Amb(VU1_STRIP_BUF* pStrip, VU1_PRIM_BUF* pPrim)
     " : : "r"(pStrip), "r"(pPrim), "r"(&vu1Ambient), "r"(&vu1Diffuse), "r"(&vu1Specula), "f"(fVu1AlphaRatio) : "$v1", "$a2", "$a3", "$t0"
     );
 }
+#endif /* RECVX_PORT */
 
 // 100% matching! 
 void vu1RotTransStripBuf(NJS_MATRIX* pMatrix, NJS_VECTOR* pVector, VU1_STRIP_BUF* pBuf)
@@ -1929,6 +1983,7 @@ void vu1RotTransStripBuf(NJS_MATRIX* pMatrix, NJS_VECTOR* pVector, VU1_STRIP_BUF
     pBuf->fFog = njCalcFogPowerEx(fIz);
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching! 
 void vu1DrawTriangleStripTransDoubleI(unsigned long ulType, VU1_STRIP_BUF* pS, unsigned short usStripMax, unsigned short usMode)
 { 
@@ -2037,8 +2092,10 @@ void vu1DrawTriangleStripTransDoubleI(unsigned long ulType, VU1_STRIP_BUF* pS, u
     } 
     
     Ps2AddPrim3DExI(ulType, Ps2_DRAW_TMP, usStripMax); 
-} 
+}
+#endif /* RECVX_PORT */ 
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 void DrawScissorPolygonTrans1P(SCISSOR* scissor, unsigned long ulType)
 {
@@ -2107,6 +2164,7 @@ void DrawScissorPolygonTrans1P(SCISSOR* scissor, unsigned long ulType)
     
     Ps2AddPrim3DEx1P(ulType, pP, in->nodeNum);
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void vu1DrawTriangleStripTransDouble1P(unsigned long ulType, VU1_STRIP_BUF* pS, unsigned short usStripMax, unsigned short usMode)

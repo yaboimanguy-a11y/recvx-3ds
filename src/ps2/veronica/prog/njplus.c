@@ -1,4 +1,7 @@
 #include "../../../ps2/veronica/prog/njplus.h"
+#ifdef RECVX_PORT
+#include "skin_port.h"
+#endif
 #include "../../../ps2/veronica/prog/ps2_dummy.h"
 #include "../../../ps2/veronica/prog/ps2_NaColi.h"
 #include "../../../ps2/veronica/prog/ps2_NaMatrix.h"
@@ -733,7 +736,7 @@ void npTransform(NJS_CNK_OBJECT* srcobj, NJS_CNK_OBJECT* dstobj, register float 
     dp = (NJS_POINT4*)((HDR_PS*)fp + 1); 
     fp = (NJS_POINT4*)np.vlp2[ono]; 
 
-    fp = (NJS_POINT4*)((int)fp | 0x30000000); 
+    fp = (NJS_POINT4*)PS2_UNCACHED_ACCEL(fp); 
 
     ((HDR_PS*)fp)->ucType = pSrc->ucType; 
     ((HDR_PS*)fp)->ucAttr = pSrc->ucAttr; 
@@ -751,6 +754,7 @@ void npTransform(NJS_CNK_OBJECT* srcobj, NJS_CNK_OBJECT* dstobj, register float 
     { 
         if ((sp->x != dp->x) || (sp->y != dp->y) || (sp->z != dp->z)) 
         { 
+#ifndef RECVX_PORT
             asm volatile 
             {
             .set noreorder
@@ -778,6 +782,17 @@ void npTransform(NJS_CNK_OBJECT* srcobj, NJS_CNK_OBJECT* dstobj, register float 
 
             .set reorder
             }
+#else
+            {   /* fp = sp + (dp - sp) * no, positions and normals (xyz); w from sp/dp */
+                int k;
+                for (k = 0; k < 3; k++) {
+                    (&fp[0].x)[k] = ((&dp[0].x)[k] - (&sp[0].x)[k]) * no + (&sp[0].x)[k];
+                    (&fp[1].x)[k] = ((&dp[1].x)[k] - (&sp[1].x)[k]) * no + (&sp[1].x)[k];
+                }
+                fp[0].w = dp[0].w;
+                fp[1].w = dp[1].w;
+            }
+#endif
                 
             fp += 2; 
             sp += 2; 
@@ -785,6 +800,7 @@ void npTransform(NJS_CNK_OBJECT* srcobj, NJS_CNK_OBJECT* dstobj, register float 
         } 
         else 
         { 
+#ifndef RECVX_PORT
             asm volatile
             {
                 .set noreorder
@@ -797,6 +813,10 @@ void npTransform(NJS_CNK_OBJECT* srcobj, NJS_CNK_OBJECT* dstobj, register float 
 
                 .set reorder
             }
+#else
+            fp[0] = sp[0];
+            fp[1] = sp[1];
+#endif
             
             fp += 2; 
             sp += 2;
@@ -1588,6 +1608,7 @@ void npSetOffsetUV(NJS_CNK_MODEL* mdlp, short offu, short offv)
             } 
             else 
             {
+#ifndef RECVX_PORT
                 asm volatile 
                 ("
                 .set noreorder
@@ -1626,6 +1647,28 @@ void npSetOffsetUV(NJS_CNK_MODEL* mdlp, short offu, short offv)
                 .set reorder
                 " : "=r"(plp) : "r"(offu), "r"(offv), "r"(usr_num), "r"(srp_num) : "t0", "t1", "t2"
                 );
+#else
+{   /* add (offu, offv) to every vertex's UV in srp_num strips
+     * (strip: count, then count x [index, u, v] shorts; user words after) */
+    char *pp = (char *)plp;
+    int n = srp_num;
+    do {
+        int t = *(short *)pp;
+        pp += 2;
+        if (t < 0)
+            t = -t;
+        do {
+            *(short *)(pp + 2) += offu;
+            *(short *)(pp + 4) += offv;
+            t--;
+            pp += 6;
+        } while (t > 0);
+        pp += usr_num * 2;
+        n--;
+    } while (n > 0);
+    plp = (short *)pp;
+}
+#endif
             }
         }
         else if (head == 8) 
@@ -1668,6 +1711,7 @@ void npSetOffsetUV2(NJS_CNK_MODEL* mdlp, short offu, short offv)
             usr_num = (*++plp >> 14) & 0x3; 
             srp_num = *plp++ & ~0xC000;
            
+#ifndef RECVX_PORT
             asm volatile 
             ("
             .set noreorder
@@ -1704,6 +1748,28 @@ void npSetOffsetUV2(NJS_CNK_MODEL* mdlp, short offu, short offv)
             .set reorder
             " : "=r"(plp) : "r"(offu), "r"(offv), "r"(usr_num), "r"(srp_num) : "t0", "t1", "t2"
             );
+#else
+{   /* add (offu, offv) to every vertex's UV in srp_num strips
+     * (strip: count, then count x [index, u, v] shorts; user words after) */
+    char *pp = (char *)plp;
+    int n = srp_num;
+    do {
+        int t = *(short *)pp;
+        pp += 2;
+        if (t < 0)
+            t = -t;
+        do {
+            *(short *)(pp + 2) += offu;
+            *(short *)(pp + 4) += offv;
+            t--;
+            pp += 6;
+        } while (t > 0);
+        pp += usr_num * 2;
+        n--;
+    } while (n > 0);
+    plp = (short *)pp;
+}
+#endif
 
             break;
         }
@@ -1798,7 +1864,8 @@ void npInitCalcSkin(void* pwp, int obj_n, int* sknp)
                 np.sknp++; 
             }
             
-            asm volatile 
+#ifndef RECVX_PORT
+            asm volatile  
             ("
             .set noreorder
             
@@ -1830,6 +1897,9 @@ void npInitCalcSkin(void* pwp, int obj_n, int* sknp)
             .set reorder
             " : : "r"(&owp->mtx), "r"(&((BH_PWORK*)pwp)->px), "r"(np.mxp[i][0]), "r"(owp) 
             );
+#else
+skin_init_pair((float*)&owp->mtx, &((BH_PWORK*)pwp)->px, (float*)np.mxp[i][0]);
+#endif
                 
             njRotXYZ(np.mxp[i][0], -op->ang[0], -op->ang[1], -op->ang[2]); 
         }
@@ -1880,7 +1950,7 @@ void npCalcSkin(void* pwp, int obj_n, int* sknp)
                     
                     nb = *np.sknp++;
     
-                    pHdr1 = (HDR_PS*)((int)pHdr1 | 0x30000000); 
+                    pHdr1 = (HDR_PS*)PS2_UNCACHED_ACCEL(pHdr1); 
     
                     pHdr1->ucType = pHdr0->ucType;
                     pHdr1->ucAttr = pHdr0->ucAttr; 
@@ -1903,7 +1973,8 @@ void npCalcSkin(void* pwp, int obj_n, int* sknp)
                         
                         if (lv != 1.0f) 
                         { 
-                            asm volatile 
+#ifndef RECVX_PORT
+                            asm volatile  
                             ("
                             .set noreorder
                             
@@ -1947,11 +2018,15 @@ void npCalcSkin(void* pwp, int obj_n, int* sknp)
                             .set reorder
                             " : : "f"(lv), "r"(p0), "r"(p1), "r"(np.mxp[rg0][0]), "r"(np.mxp[rg0][1]) : "t0" 
                             );
+#else
+skin_blend_pt(lv, (float*)p0, p1, (float*)np.mxp[rg0][0], (float*)np.mxp[rg0][1]);
+#endif
                             
                             p1 += 4; 
                             p0++; 
                             
-                            asm volatile 
+#ifndef RECVX_PORT
+                            asm volatile  
                             ("
                             .set noreorder
                                              
@@ -1990,13 +2065,17 @@ void npCalcSkin(void* pwp, int obj_n, int* sknp)
                             .set reorder
                             " : : "f"(lv), "r"(p0),  "r"(p1), "r"(np.mxp[rg0][0]), "r"(np.mxp[rg0][1]) : "t0" 
                             );
+#else
+skin_blend_vec(lv, (float*)p0, p1, (float*)np.mxp[rg0][0], (float*)np.mxp[rg0][1]);
+#endif
                             
                             p1 += 4; 
                             p0++;
                         } 
                         else 
                         { 
-                            asm volatile 
+#ifndef RECVX_PORT
+                            asm volatile  
                             ("
                             .set noreorder
                                               
@@ -2025,7 +2104,11 @@ void npCalcSkin(void* pwp, int obj_n, int* sknp)
                                 
                             .set reorder
                             " : : "r"(p0), "r"(p1), "r"(np.mxp[rg0][1]), "r"(op)
-                            ); 
+                            );
+#else
+skin_one((float*)p0, p1, (float*)np.mxp[rg0][1]);
+#endif
+ 
                             
                             p0 += 2; 
                             p1 += 8; 
@@ -2097,7 +2180,8 @@ void npInitCalcSkinFM(void* pwp, int obj_n, int* sknp)
                     np.sknp++; 
                 }
                 
-                asm volatile 
+#ifndef RECVX_PORT
+                asm volatile  
                 ("
                 .set noreorder
                 
@@ -2129,6 +2213,9 @@ void npInitCalcSkinFM(void* pwp, int obj_n, int* sknp)
                 .set reorder
                 " : : "r"(&owp->mtx), "r"(&((BH_PWORK*)pwp)->px), "r"(np.mxp[i][0]), "r"(owp) 
                 );
+#else
+skin_init_pair((float*)&owp->mtx, &((BH_PWORK*)pwp)->px, (float*)np.mxp[i][0]);
+#endif
                     
                 njRotXYZ(np.mxp[i][0], -op->ang[0], -op->ang[1], -op->ang[2]); 
             }
@@ -2182,7 +2269,7 @@ void npCalcSkinFM(void* pwp, int obj_n, int* sknp)
                         
                         nb = *np.sknp++;
         
-                        pHdr1 = (HDR_PS*)((int)pHdr1 | 0x30000000); 
+                        pHdr1 = (HDR_PS*)PS2_UNCACHED_ACCEL(pHdr1); 
         
                         pHdr1->ucType = pHdr0->ucType;
                         pHdr1->ucAttr = pHdr0->ucAttr; 
@@ -2210,7 +2297,8 @@ void npCalcSkinFM(void* pwp, int obj_n, int* sknp)
                             
                             if (lv != 1.0f) 
                             { 
-                                asm volatile 
+#ifndef RECVX_PORT
+                                asm volatile  
                                 ("
                                 .set noreorder
                                 
@@ -2254,11 +2342,15 @@ void npCalcSkinFM(void* pwp, int obj_n, int* sknp)
                                 .set reorder
                                 " : : "f"(lv), "r"(p0), "r"(p1), "r"(np.mxp[rg0][0]), "r"(np.mxp[rg0][1]) : "t0" 
                                 );
+#else
+skin_blend_pt(lv, (float*)p0, p1, (float*)np.mxp[rg0][0], (float*)np.mxp[rg0][1]);
+#endif
                                 
                                 p1 += 4; 
                                 p0++; 
                                 
-                                asm volatile 
+#ifndef RECVX_PORT
+                                asm volatile  
                                 ("
                                 .set noreorder
                                                  
@@ -2297,13 +2389,17 @@ void npCalcSkinFM(void* pwp, int obj_n, int* sknp)
                                 .set reorder
                                 " : : "f"(lv), "r"(p0),  "r"(p1), "r"(np.mxp[rg0][0]), "r"(np.mxp[rg0][1]) : "t0" 
                                 );
+#else
+skin_blend_vec(lv, (float*)p0, p1, (float*)np.mxp[rg0][0], (float*)np.mxp[rg0][1]);
+#endif
                                 
                                 p1 += 4; 
                                 p0++;
                             } 
                             else 
                             { 
-                                asm volatile 
+#ifndef RECVX_PORT
+                                asm volatile  
                                 ("
                                 .set noreorder
                                                   
@@ -2332,7 +2428,11 @@ void npCalcSkinFM(void* pwp, int obj_n, int* sknp)
                                     
                                 .set reorder
                                 " : : "r"(p0), "r"(p1), "r"(np.mxp[rg0][1]), "r"(op)
-                                ); 
+                                );
+#else
+skin_one((float*)p0, p1, (float*)np.mxp[rg0][1]);
+#endif
+ 
                                 
                                 p0 += 2; 
                                 p1 += 8; 

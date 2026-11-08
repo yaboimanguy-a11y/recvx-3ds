@@ -1211,6 +1211,7 @@ void bhObj004(O_WRK* op)
     }
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 98.68% matching
 void bhObj005(O_WRK* op) 
 {
@@ -1539,6 +1540,7 @@ void bhObj005(O_WRK* op)
         break;
     }
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void bhObj006(O_WRK* op) 

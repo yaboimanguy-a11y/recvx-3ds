@@ -1,4 +1,7 @@
 #include "../../../ps2/veronica/prog/ps2_dummy.h"
+#ifdef RECVX_PORT
+#include "prim_port.h"
+#endif
 #include "../../../ps2/veronica/prog/ps2_loadtim2.h"
 #include "../../../ps2/veronica/prog/ps2_NaDraw2D.h"
 #include "../../../ps2/veronica/prog/ps2_NaMath.h"
@@ -546,6 +549,7 @@ void Ps2AddPrim3D(unsigned long prim, void* dp, unsigned int num)
     *p++ = (SCE_GIF_SET_TAG(0, 1, SCE_GIF_REGLIST, 0, 0, 3) | prim) | num;
     *p++ = GIF_REGLIST(SCE_GS_ST, SCE_GS_RGBAQ, SCE_GS_XYZF2);
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -637,6 +641,9 @@ void Ps2AddPrim3D(unsigned long prim, void* dp, unsigned int num)
     .set reorder
     " : : "r"(clip_vec), "r"(near_far_vec), "r"(zclip_ab_vec), "r"(zbuff_ab_vec), "r"(dp), "r"(p), "r"(num) : 
     );
+#else
+prim_xform(zbuff_ab_vec, dp, p, num, 0);
+#endif
 
     if ((prim & 0x20000000000000)) 
     {
@@ -717,6 +724,7 @@ void Ps2AddPrim3DEx(unsigned long prim, void* dp, unsigned int num)
     *p++ = (SCE_GIF_SET_TAG(0, 1, SCE_GIF_REGLIST, 0, 0, 3) | prim) | num;
     *p++ = GIF_REGLIST(SCE_GS_ST, SCE_GS_RGBAQ, SCE_GS_XYZF2);
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -810,6 +818,9 @@ void Ps2AddPrim3DEx(unsigned long prim, void* dp, unsigned int num)
     .set reorder
     " : : "r"(clip_vec), "r"(near_far_vec), "r"(zclip_ab_vec), "r"(zbuff_ab_vec), "r"(dp), "r"(p), "r"(num) : 
     );
+#else
+prim_xform(zbuff_ab_vec, dp, p, num, 1);
+#endif
 
     if ((prim & 0x20000000000000)) 
     {
@@ -898,6 +909,7 @@ void Ps2AddPrim3DEx1P(unsigned long prim, void* dp, unsigned int num)
     *p++ = (SCE_GIF_SET_TAG(0, 1, SCE_GIF_REGLIST, 0, 0, 3) | prim) | num;
     *p++ = GIF_REGLIST(SCE_GS_ST, SCE_GS_RGBAQ, SCE_GS_XYZF2);
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -991,6 +1003,9 @@ void Ps2AddPrim3DEx1P(unsigned long prim, void* dp, unsigned int num)
     .set reorder
     " : : "r"(clip_vec), "r"(near_far_vec), "r"(zclip_ab_vec), "r"(zbuff_ab_vec), "r"(dp), "r"(p), "r"(num) : 
     );
+#else
+prim_xform(zbuff_ab_vec, dp, p, num, 1);
+#endif
 
     if ((Ps2_albinoid_flag == 0) && ((prim & 0x20000000000000))) 
     {
@@ -1041,6 +1056,7 @@ void Ps2AddPrim3DMod(unsigned long prim, void* dp, unsigned int num)
     *p++ = (SCE_GIF_SET_TAG(0, 1, SCE_GIF_REGLIST, 0, 0, 3) | prim) | num;
     *p++ = GIF_REGLIST(SCE_GS_ST, SCE_GS_RGBAQ, SCE_GS_XYZF2);
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -1134,6 +1150,9 @@ void Ps2AddPrim3DMod(unsigned long prim, void* dp, unsigned int num)
     .set reorder
     " : : "r"(clip_vec), "r"(near_far_vec), "r"(zclip_ab_vec), "r"(zbuff_ab_vec), "r"(dp), "r"(p), "r"(num) : 
     );
+#else
+prim_xform(zbuff_ab_vec, dp, p, num, 1);
+#endif
 
     SyncPath();
     
@@ -1470,6 +1489,7 @@ int Ps2DrawOTagSub(int start_no)
 // 100% matching!
 unsigned int Ps2BitCount(register unsigned int value)
 {
+#ifndef RECVX_PORT
     asm volatile
     {
         
@@ -1483,6 +1503,13 @@ unsigned int Ps2BitCount(register unsigned int value)
         nop
             
     }
+#else
+{   /* bits needed for value - 1: 32 minus its run of leading sign bits */
+    int x = (int)value - 1;
+    unsigned int u = x < 0 ? ~(unsigned int)x : (unsigned int)x;
+    return u ? 32 - __builtin_clz(u) : 0;
+}
+#endif
 }
 
 // 100% matching!
@@ -2362,6 +2389,7 @@ void Ps2AddPrim3DExI(unsigned long prim, void* dp, unsigned int num)
     *p++ = (SCE_GIF_SET_TAG(0, 1, SCE_GIF_REGLIST, 0, 0, 3) | prim) | num;
     *p++ = GIF_REGLIST(SCE_GS_ST, SCE_GS_RGBAQ, SCE_GS_XYZF2);
     
+#ifndef RECVX_PORT
     asm volatile
     ("
     .set noreorder
@@ -2451,6 +2479,9 @@ void Ps2AddPrim3DExI(unsigned long prim, void* dp, unsigned int num)
     .set reorder
     " : : "r"(clip_vec), "r"(near_far_vec), "r"(zclip_ab_vec), "r"(zbuff_ab_vec), "r"(dp), "r"(p), "r"(num), "r"(clip_flag), "r"(st_clip_flag), "r"(clut_flag)  : "v0", "memory" 
     );
+#else
+prim_xform(zbuff_ab_vec, dp, p, num, 1);
+#endif
 
     if ((prim & 0x20000000000000)) 
     {

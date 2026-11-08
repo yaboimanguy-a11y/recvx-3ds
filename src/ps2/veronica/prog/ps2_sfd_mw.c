@@ -35,6 +35,7 @@ Sint32 mwPlyCalcWorkSofdec(Sint32 ftype, Sint32 max_bps, Sint32 max_sx, Sint32 m
     // no return 
 }
 
+#ifndef RECVX_PORT /* port: C version in port/host/ */
 // 100% matching!
 MWPLY ps2mwPlyCreateSofdec(MWS_PLY_CPRM_SFD* cprm, char* fname) 
 {
@@ -102,6 +103,7 @@ MWPLY ps2mwPlyCreateSofdec(MWS_PLY_CPRM_SFD* cprm, char* fname)
     
     return MwHandle;
 }
+#endif /* RECVX_PORT */
 
 // 100% matching!
 void mwPlyExecServer(void)
