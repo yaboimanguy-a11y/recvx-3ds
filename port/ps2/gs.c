@@ -859,8 +859,12 @@ static void trx_local_(void)
  * of the GS memory pages it reads (ch): a slot that holds picture A, then B,
  * then A again finds A's decoded texture again instead of decoding it. */
 #define TEXC 512
+#ifdef RECVX_O3DS
+#define TEX_BUDGET (7u << 20)       /* the 16 MB linear heap of the original 3DS build */
+#else
 #define TEX_BUDGET (15u << 20)      /* real GPU bytes (16-bit textures count half); the
                                      * 32 MB linear heap also holds the vertex rings */      /* GPU texture bytes (linear memory: 32 MB in all) */
+#endif
 typedef struct {
     u_long key0, key1;
     u_int gen;              /* generation when last checked against GS memory */

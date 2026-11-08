@@ -33,7 +33,11 @@ static C2D_TextBuf tbuf;
 static int ui_ok, settings_open;
 static u32 c_bg0, c_bg1, c_white, c_dim, c_gold, c_head0, c_head1, c_red;
 
+#ifdef RECVX_O3DS
+UiSettings g_ui = { 1, 0, 0, 0 };       /* frame skip on: it cannot keep up without */
+#else
 UiSettings g_ui = { 2, 0, 0, 0 };
+#endif
 static char app_dir[128];
 
 /* ---------------- settings.txt ---------------- */

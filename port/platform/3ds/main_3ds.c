@@ -17,7 +17,13 @@
 #include "disc.h"
 
 u32 __stacksize__ = 1024 * 1024;
+#ifdef RECVX_O3DS
+/* the original 3DS gives an app about 64 MB: the game's arrays take ~43, this
+ * pool 16 (textures, vertices, GPU commands), the plain heap the rest */
+u32 __ctru_linear_heap_size = 16u << 20;
+#else
 u32 __ctru_linear_heap_size = 32u << 20;
+#endif
 
 int recvx_ps2_main(int argc, char **argv);
 int rend_init(void);
@@ -89,7 +95,7 @@ int main(void)
     ui_load_settings(plat_app_dir());   /* settings.txt (the cog on the bottom screen) */
     sys3ds_open_log();
     plat_log("Resident Evil CVX (native port, test build)\n");
-    plat_log("%s\n", n3ds ? "New 3DS" : "WARNING: not a New 3DS - this will be too slow");
+    plat_log("%s\n", n3ds ? "New 3DS" : "Old 3DS: expect slow motion");
     plat_log("memory: application %u KB (%u KB free), linear heap free %u KB\n",
              (unsigned)(osGetMemRegionSize(MEMREGION_APPLICATION) >> 10),
              (unsigned)(osGetMemRegionFree(MEMREGION_APPLICATION) >> 10), (unsigned)(linearSpaceFree() >> 10));

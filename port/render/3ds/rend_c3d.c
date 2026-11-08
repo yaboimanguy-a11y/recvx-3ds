@@ -25,7 +25,11 @@ extern const unsigned int r2d_shbin_size;
 #define CANVAS_W 640
 #define CANVAS_H 480
 #define MAX_TEX 1024
+#ifdef RECVX_O3DS
+#define VRING_BYTES (3u << 19)  /* 1.5 MB */
+#else
 #define VRING_BYTES (2u << 20)
+#endif
 #define NRING 3                 /* frame being recorded, frame being drawn, frame the GPU may still read */
 #define MAX_DEAD 1024
 
@@ -77,7 +81,11 @@ typedef struct {
     uint8_t *vb;
     int n;
 } Cmd;
+#ifdef RECVX_O3DS
+#define MAX_CMD 4096
+#else
 #define MAX_CMD 8192
+#endif
 static Cmd cmdbuf[2][MAX_CMD];     /* recorded (game thread) / replayed (render thread) */
 static Cmd *cmds = cmdbuf[0];
 static int ncmd, cmd_side;
@@ -152,7 +160,9 @@ int rend_init(void)
             GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) |
             GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO);
         R.top_rt = C3D_RenderTargetCreate(240, 400, GPU_RB_RGBA8, nodepth);
+#ifndef RECVX_O3DS                  /* no 3D slider: the second eye's memory and GPU time saved */
         R.top_rt_r = C3D_RenderTargetCreate(240, 400, GPU_RB_RGBA8, nodepth);
+#endif
         if (!R.canvas_rt || !R.top_rt)
             return -3;
         C3D_RenderTargetSetOutput(R.top_rt, GFX_TOP, GFX_LEFT, xfer);
@@ -184,7 +194,9 @@ int rend_init(void)
     P.vh = CANVAS_H;
     P.ssx = P.ssy = 1.0f;
     P.cur_target = -1;
+#ifndef RECVX_O3DS
     gfxSet3D(true);
+#endif
     R.vring[0] = linearAlloc(VRING_BYTES);
     R.vring[1] = linearAlloc(VRING_BYTES);
     R.vring[2] = linearAlloc(VRING_BYTES);
@@ -411,7 +423,11 @@ unsigned rend_linear_free_kb(void) { return (unsigned)(linearSpaceFree() >> 10);
 
 int rend_mem_low(void)
 {
+#ifdef RECVX_O3DS
+    return linearSpaceFree() < (3u << 19);
+#else
     return linearSpaceFree() < (3u << 20);
+#endif
 }
 
 void rend_tex_free(int handle)
@@ -1030,7 +1046,15 @@ void rend_start_thread(void)
     /* core 2 (New 3DS), below the audio thread there; without it the frame
      * is drawn on the game's thread as before */
     rthr = threadCreate(render_thread, NULL, 64 * 1024, prio - 1, 2, true);
-    plat_log("renderer: %s\n", rthr ? "GPU work on its own thread (core 2)" : "GPU work on the game thread");
+    if (rthr) {
+        plat_log("renderer: GPU work on its own thread (core 2)\n");
+        return;
+    }
+    /* the original 3DS: the system core, with most of its time given to the
+     * app (below the audio thread there) */
+    APT_SetAppCpuTimeLimit(70);
+    rthr = threadCreate(render_thread, NULL, 64 * 1024, prio - 1, 1, true);
+    plat_log("renderer: %s\n", rthr ? "GPU work on its own thread (core 1)" : "GPU work on the game thread");
 }
 
 /* 1: the render thread stopped (citro3d can be shut down); 0: it is stuck

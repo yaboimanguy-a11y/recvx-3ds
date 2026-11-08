@@ -22,7 +22,11 @@ cmake -S port -B build/port-3ds -G Ninja -DCMAKE_TOOLCHAIN_FILE=port/cmake/3ds-c
 ninja -C build/port-3ds recvx_sdcard
 ```
 
-The SD card folder is written to `build/port-3ds/sdcard/3ds/recvx/`. If clang isn't at the Homebrew path, pass `-DRECVX_3DS_CLANG=/path/to/clang`. `-DRECVX_CA_BUNDLE=` sets the certificate bundle copied in as `cacert.pem` (default `/etc/ssl/cert.pem`).
+The SD card folder is written to `build/port-3ds/sdcard/3ds/recvx/`.
+
+For the original 3DS or 2DS, use its own build folder and add `-DRECVX_O3DS=ON`. That makes `recvx_o3ds.3dsx`, with less memory for textures, no 3D slider, no updater, and frame skip on by default. Expect it to run well below full speed.
+
+ If clang isn't at the Homebrew path, pass `-DRECVX_3DS_CLANG=/path/to/clang`. `-DRECVX_CA_BUNDLE=` sets the certificate bundle copied in as `cacert.pem` (default `/etc/ssl/cert.pem`).
 
 ## AI disclosure
 

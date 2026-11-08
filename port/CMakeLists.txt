@@ -14,6 +14,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 project(recvx_port C ASM)
 
+# the original 3DS (RECVX_O3DS=ON, its own build folder): less memory, no 3D
+# slider, no updater, frame skip on by default; a separate app, recvx_o3ds.3dsx
+option(RECVX_O3DS "build for the original 3DS / 2DS" OFF)
+if(RECVX_O3DS)
+  add_compile_definitions(RECVX_O3DS=1)
+endif()
+
 if(NOT RECVX_3DS)
   message(FATAL_ERROR "configure with -DCMAKE_TOOLCHAIN_FILE=port/cmake/3ds-clang.cmake")
 endif()
@@ -141,7 +148,9 @@ set(RECVX_UPDATE_REPO "yaboimanguy-a11y/recvx-3ds" CACHE STRING "GitHub owner/re
 set(_portlibs "${DEVKITPRO}/portlibs/3ds")
 set(RECVX_UPDATER_LIBS "")
 target_compile_definitions(recvx PRIVATE RECVX_VERSION="${RECVX_VERSION}" RECVX_UPDATE_REPO="${RECVX_UPDATE_REPO}")
-if(EXISTS "${_portlibs}/lib/libcurl.a" AND EXISTS "${_portlibs}/lib/libmbedtls.a")
+if(RECVX_O3DS)
+  # no updater: its TLS memory does not fit, and it installs the New 3DS app
+elseif(EXISTS "${_portlibs}/lib/libcurl.a" AND EXISTS "${_portlibs}/lib/libmbedtls.a")
   target_compile_definitions(recvx PRIVATE RECVX_HAVE_CURL=1)
   target_include_directories(recvx SYSTEM PRIVATE "${_portlibs}/include")
   set(RECVX_UPDATER_LIBS "${_portlibs}/lib/libcurl.a" "${_portlibs}/lib/libmbedtls.a"
@@ -151,7 +160,13 @@ else()
 endif()
 target_link_libraries(recvx PRIVATE recvx_game citro2d citro3d ${RECVX_UPDATER_LIBS} ctru m)
 target_link_options(recvx PRIVATE "-Wl,-Map=${CMAKE_BINARY_DIR}/recvx.map")
-recvx_3dsx(recvx "Resident Evil CVX")
+if(RECVX_O3DS)
+  recvx_3dsx(recvx "Resident Evil CVX (Old 3DS)")
+  set(RECVX_SD_NAME recvx_o3ds.3dsx)
+else()
+  recvx_3dsx(recvx "Resident Evil CVX")
+  set(RECVX_SD_NAME recvx.3dsx)
+endif()
 
 # ---- SD card folder ------------------------------------------------------
 # the updater checks GitHub's certificate against cacert.pem (a CA bundle)
@@ -159,8 +174,9 @@ set(RECVX_CA_BUNDLE "/etc/ssl/cert.pem" CACHE FILEPATH "CA certificate bundle co
 set(SD "${CMAKE_BINARY_DIR}/sdcard/3ds/recvx")
 add_custom_target(recvx_sdcard ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory "${SD}"
-  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/recvx.3dsx" "${SD}/recvx.3dsx"
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/recvx.3dsx" "${SD}/${RECVX_SD_NAME}"
   COMMAND ${CMAKE_COMMAND} -E copy "${PORT_DIR}/platform/3ds/README.txt" "${SD}/README.txt"
+  COMMAND ${CMAKE_COMMAND} -E copy "${PORT_DIR}/platform/3ds/README_O3DS.txt" "${SD}/README_O3DS.txt"
   COMMAND ${CMAKE_COMMAND} -E copy "${RECVX_CA_BUNDLE}" "${SD}/cacert.pem"
   DEPENDS recvx
   COMMENT "SD card folder: sdcard/3ds/recvx")
