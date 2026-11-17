@@ -862,8 +862,10 @@ static void trx_local_(void)
 #ifdef RECVX_O3DS
 #define TEX_BUDGET (7u << 20)       /* the 16 MB linear heap of the original 3DS build */
 #else
-#define TEX_BUDGET (15u << 20)      /* real GPU bytes (16-bit textures count half); the
-                                     * 32 MB linear heap also holds the vertex rings */      /* GPU texture bytes (linear memory: 32 MB in all) */
+#define TEX_BUDGET (28u << 20)      /* real GPU bytes (16-bit textures count half); the
+                                     * 48 MB linear heap also holds the vertex rings.
+                                     * 15 MB was too little for cutscenes: the cache
+                                     * sat full and remade 40-75 textures a second */
 #endif
 typedef struct {
     u_long key0, key1;
@@ -1735,6 +1737,19 @@ static void vertex_kick(u_int x, u_int y, u_int z, u_int f, int drawing)
              * the 3D scene: shifted per eye like the models */
             if (tgt == -1 && rp == RPRIM_TRI && (out[0].w != 1.0f || out[1].w != 1.0f || out[2].w != 1.0f))
                 s.stereo = 1;
+            /* 2D at the front of the GS range (z 65534, where the game
+             * clamps everything): GEQUAL there passes over anything the
+             * game can draw, so it is ALWAYS.  On the GPU, close-up model
+             * depth (divided by w, rounded to 24 bits) could land a hair
+             * past it: the cutscene's black bars (bhDrawCinesco) blinked
+             * as characters came near the camera */
+            if (s.zte && s.ztst == 2) {
+                int front = 1;
+                for (i = 0; i < need && front; i++)
+                    front = out[i].w == 1.0f && out[i].z >= 65533.5f / 65535.0f;
+                if (front)
+                    s.ztst = 1;
+            }
             {
                 unsigned tk = PUS();
                 int pv = prof_enter(PB_GSDRAW);
@@ -2527,10 +2542,10 @@ void gs_frame_end(void)
                      t_last ? 60000.0f / span : 0.0f, t_last ? span / 60.0f : 0.0f, nskip);
             nskip = 0;
             {
-                extern unsigned rend_linear_free_kb(void);
+                extern unsigned rend_linear_free_kb(void), plat_heap_free_kb(void);
                 plat_log("[textures] last 60 frames: %u made, %u page patches, %u made again as 32-bit; "
-                         "cache %u KB, GPU memory free %u KB\n",
-                         st_tex_new, st_tex_patch, st_tex_redo, tex_bytes >> 10, rend_linear_free_kb());
+                         "cache %u KB, GPU memory free %u KB, heap free %u KB\n",
+                         st_tex_new, st_tex_patch, st_tex_redo, tex_bytes >> 10, rend_linear_free_kb(), plat_heap_free_kb());
             }
             st_tex_new = st_tex_patch = st_tex_redo = 0;
             plat_log("[time] per frame: image uploads %.1f ms, texture building %.1f ms, "
@@ -2611,8 +2626,17 @@ void gs_frame_end(void)
     }
     {
         u_int k;
-        for (k = 0; k < offs_n; k++) {     /* this frame's triangles become the frame before's */
-            offs[k].tris_prev = offs[k].tris_cur;
+        /* tris_prev holds a buffer's shadow status for a while (drawn
+         * frames): a cutscene's shadow pass can miss a frame (models
+         * hidden, or a frame skipped by frame skip, which walks no
+         * models), and a buffer judged a picture for one frame had its
+         * black shadow layer laid over the whole screen: the cutscene
+         * flashed.  A skipped frame neither sets nor ages it. */
+        for (k = 0; k < offs_n; k++) {
+            if (offs[k].tris_cur)
+                offs[k].tris_prev = 300;
+            else if (offs[k].tris_prev && !g_skip_draw)
+                offs[k].tris_prev--;
             offs[k].tris_cur = 0;
         }
     }

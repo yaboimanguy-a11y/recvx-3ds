@@ -22,7 +22,11 @@ u32 __stacksize__ = 1024 * 1024;
  * pool 16 (textures, vertices, GPU commands), the plain heap the rest */
 u32 __ctru_linear_heap_size = 16u << 20;
 #else
-u32 __ctru_linear_heap_size = 32u << 20;
+/* the New 3DS gives an app 124 MB: the program image (the game's arrays
+ * in it) takes ~44, the plain heap needs only a few (audio, disc buffer,
+ * the updater's download): 48 MB here holds the texture cache (28 MB),
+ * the vertex rings and the GPU commands */
+u32 __ctru_linear_heap_size = 48u << 20;
 #endif
 
 int recvx_ps2_main(int argc, char **argv);

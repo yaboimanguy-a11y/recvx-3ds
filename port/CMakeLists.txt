@@ -143,7 +143,7 @@ set_source_files_properties("${PORT_DIR}/render/3ds/rend_c3d.c" PROPERTIES COMPI
 # the in-app updater (update_3ds.c): this app's version, the GitHub
 # repository whose releases it installs, and libcurl + mbedTLS from the
 # devkitPro portlibs (dkp-pacman -S 3ds-curl)
-set(RECVX_VERSION "0.1.0" CACHE STRING "version of the 3DS app (compared with the release tags, v0.1.0)")
+set(RECVX_VERSION "0.2.0" CACHE STRING "version of the 3DS app (compared with the release tags, v0.2.0)")
 set(RECVX_UPDATE_REPO "yaboimanguy-a11y/recvx-3ds" CACHE STRING "GitHub owner/repo the updater installs releases from")
 set(_portlibs "${DEVKITPRO}/portlibs/3ds")
 set(RECVX_UPDATER_LIBS "")

@@ -462,3 +462,16 @@ unsigned plat_ms(void) { return (unsigned)(svcGetSystemTick() / (SYSCLOCK_ARM11 
 
 /* microseconds since boot (profiling) */
 unsigned plat_us(void) { return (unsigned)(svcGetSystemTick() / (SYSCLOCK_ARM11 / 1000000)); }
+
+/* plain heap left (the log): what sbrk has not handed out yet plus what
+ * malloc holds free */
+#include <malloc.h>
+extern char *fake_heap_end;
+void *sbrk(ptrdiff_t);
+unsigned plat_heap_free_kb(void)
+{
+    struct mallinfo mi = mallinfo();
+    char *top = (char *)sbrk(0);
+    unsigned rest = top && top != (char *)-1 && fake_heap_end > top ? (unsigned)(fake_heap_end - top) : 0;
+    return (rest + (unsigned)mi.fordblks) >> 10;
+}

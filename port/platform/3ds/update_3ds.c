@@ -27,7 +27,7 @@
 #include "update_3ds.h"
 
 #ifndef RECVX_VERSION
-#define RECVX_VERSION "0.1.0"
+#define RECVX_VERSION "0.2.0"
 #endif
 #ifndef RECVX_UPDATE_REPO
 #define RECVX_UPDATE_REPO "yaboimanguy-a11y/recvx-3ds"

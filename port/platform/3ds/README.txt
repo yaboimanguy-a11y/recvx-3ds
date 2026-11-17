@@ -1,7 +1,7 @@
 Resident Evil Code: Veronica X - native port, New Nintendo 3DS
 ==============================================================
 
-Version 0.1.0.  New 3DS / New 3DS XL / New 2DS XL only.
+Version 0.2.0.  New 3DS / New 3DS XL / New 2DS XL only.
 
 1. Put your own dump of the US PS2 disc (SLUS-20184) in this folder
    as a .iso (any file name), next to recvx.3dsx.
